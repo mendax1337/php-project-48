@@ -9,6 +9,8 @@ if (file_exists($autoloadPath1)) {
     require_once $autoloadPath2;
 }
 
+use function Gendiff\parseFile;
+
 $doc = <<<DOC
 Generate diff
 
@@ -23,5 +25,18 @@ Options:
   --format <fmt>                Report format [default: stylish]
 DOC;
 
-// require('path/to/src/docopt.php');
-$args = Docopt::handle($doc, array('version'=>'gendiff v. 0.1'));
+$args = Docopt::handle($doc, ['version' => 'gendiff v. 0.1']);
+
+$firstFile = $args['<firstFile>'];
+$secondFile = $args['<secondFile>'];
+
+try {
+    $data1 = parseFile($firstFile);
+    $data2 = parseFile($secondFile);
+
+    print_r($data1);
+    print_r($data2);
+} catch (Exception $e) {
+    fwrite(STDERR, "Error: {$e->getMessage()}\n");
+    exit(1);
+}

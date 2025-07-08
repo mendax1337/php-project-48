@@ -6,5 +6,6 @@ logs
 *.swo
 *.swp
 *.cache
+*.json
 build
 coverage.xml
