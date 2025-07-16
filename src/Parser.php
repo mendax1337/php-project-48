@@ -1,10 +1,15 @@
 <?php
 
-namespace Gendiff;
+namespace Differ\Parser;
 
 function parseFile(string $filepath): array
 {
-    $content = file_get_contents($filepath);
+    $realPath = realpath($filepath);
+    if ($realPath === false) {
+        throw new \Exception("File not found: {$filepath}");
+    }
+
+    $content = file_get_contents($realPath);
     if ($content === false) {
         throw new \Exception("Can't read file: {$filepath}");
     }
