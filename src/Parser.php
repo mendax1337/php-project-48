@@ -1,7 +1,10 @@
 <?php
+
 namespace Differ\Parser;
 
-class ParseError extends \Exception {}
+class ParseError extends \Exception
+{
+}
 
 function parseFile(string $filepath): array
 {
