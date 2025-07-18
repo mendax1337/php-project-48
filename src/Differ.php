@@ -19,14 +19,19 @@ function genDiff(string $pathToFile1, string $pathToFile2): string
         $val1 = $has1 ? formatValue($data1[$key]) : null;
         $val2 = $has2 ? formatValue($data2[$key]) : null;
 
-        return match (true) {
-            $has1 && !$has2 => "  - {$key}: {$val1}",
-            !$has1 && $has2 => "  + {$key}: {$val2}",
-            $val1 !== $val2 => "  - {$key}: {$val1}\n  + {$key}: {$val2}",
-            default => "    {$key}: {$val1}",
-        };
-    }, $sortedKeys);
+        $result = '';
+        if ($has1 && !$has2) {
+            $result = "  - {$key}: {$val1}";
+        } elseif (!$has1 && $has2) {
+            $result = "  + {$key}: {$val2}";
+        } elseif ($val1 !== $val2) {
+            $result = "  - {$key}: {$val1}\n  + {$key}: {$val2}";
+        } else {
+            $result = "    {$key}: {$val1}";
+        }
 
+        return $result;
+    }, $sortedKeys);
     return "{\n" . implode("\n", $diffLines) . "\n}";
 }
 
