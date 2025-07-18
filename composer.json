@@ -16,6 +16,11 @@
             "src/Differ.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Differ\\Tests\\": "tests/"
+        }
+    },
     "bin": [
         "bin/gendiff"
     ],

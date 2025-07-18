@@ -3,3 +3,5 @@
 ## Asciinema:
 ### Gendiff:
 [![asciicast](https://asciinema.org/a/728543.svg)](https://asciinema.org/a/728543)
+
+![CI](https://github.com/mendax1337/php-project-48/actions/workflows/ci.yml/badge.svg)
