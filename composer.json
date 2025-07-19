@@ -14,8 +14,9 @@
             "Differ\\": "src/"
         },
         "files": [
+            "src/Differ.php",
             "src/Parser.php",
-            "src/Differ.php"
+            "src/Formatters/Stylish.php"
         ]
     },
     "autoload-dev": {

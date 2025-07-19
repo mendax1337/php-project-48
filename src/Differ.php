@@ -3,47 +3,52 @@
 namespace Differ\Differ;
 
 use function Differ\Parser\parseFile;
+use function Differ\Formatters\Stylish\formatStylish;
 
-function genDiff(string $pathToFile1, string $pathToFile2): string
+const ADDED = 'added';
+const REMOVED = 'removed';
+const UNCHANGED = 'unchanged';
+const CHANGED = 'changed';
+const NESTED = 'nested';
+
+function genDiff(string $filePath1, string $filePath2, string $format = 'stylish'): string
 {
-    $data1 = parseFile($pathToFile1);
-    $data2 = parseFile($pathToFile2);
+    $data1 = parseFile($filePath1);
+    $data2 = parseFile($filePath2);
 
-    $mergedKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));
-    $sortedKeys = $mergedKeys;
-    sort($sortedKeys);
+    $diffTree = buildDiffTree($data1, $data2);
 
-    $diffLines = array_map(function ($key) use ($data1, $data2) {
-        $has1 = array_key_exists($key, $data1);
-        $has2 = array_key_exists($key, $data2);
-        $val1 = $has1 ? formatValue($data1[$key]) : null;
-        $val2 = $has2 ? formatValue($data2[$key]) : null;
-
-        $result = '';
-        if ($has1 && !$has2) {
-            $result = "  - {$key}: {$val1}";
-        } elseif (!$has1 && $has2) {
-            $result = "  + {$key}: {$val2}";
-        } elseif ($val1 !== $val2) {
-            $result = "  - {$key}: {$val1}\n  + {$key}: {$val2}";
-        } else {
-            $result = "    {$key}: {$val1}";
-        }
-
-        return $result;
-    }, $sortedKeys);
-    return "{\n" . implode("\n", $diffLines) . "\n}";
+    switch ($format) {
+        case 'stylish':
+            return formatStylish($diffTree);
+        default:
+            throw new \Exception("Unknown format: {$format}");
+    }
 }
 
-function formatValue(mixed $value): string
+function buildDiffTree(array $data1, array $data2): array
 {
-    if (is_bool($value)) {
-        return $value ? 'true' : 'false';
-    }
+    $allKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));
+    sort($allKeys);
 
-    if ($value === null) {
-        return 'null';
-    }
+    $diff = [];
+    foreach ($allKeys as $key) {
+        $exists1 = array_key_exists($key, $data1);
+        $exists2 = array_key_exists($key, $data2);
+        $value1 = $exists1 ? $data1[$key] : null;
+        $value2 = $exists2 ? $data2[$key] : null;
 
-    return (string) $value;
+        if ($exists1 && !$exists2) {
+            $diff[] = ['key' => $key, 'type' => REMOVED, 'value' => $value1];
+        } elseif (!$exists1 && $exists2) {
+            $diff[] = ['key' => $key, 'type' => ADDED, 'value' => $value2];
+        } elseif (is_array($value1) && is_array($value2)) {
+            $diff[] = ['key' => $key, 'type' => NESTED, 'children' => buildDiffTree($value1, $value2)];
+        } elseif ($value1 !== $value2) {
+            $diff[] = ['key' => $key, 'type' => CHANGED, 'oldValue' => $value1, 'newValue' => $value2];
+        } else {
+            $diff[] = ['key' => $key, 'type' => UNCHANGED, 'value' => $value1];
+        }
+    }
+    return $diff;
 }

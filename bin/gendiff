@@ -29,9 +29,10 @@ $args = Docopt::handle($doc, ['version' => '1.0']);
 
 $firstFile = $args['<firstFile>'];
 $secondFile = $args['<secondFile>'];
+$format = $args['--format'] ?? 'stylish';
 
 try {
-    $diff = genDiff($firstFile, $secondFile);
+    $diff = genDiff($firstFile, $secondFile, $format);
     print_r($diff);
 } catch (Exception $e) {
     fwrite(STDERR, "Error: " . $e->getMessage() . PHP_EOL);
