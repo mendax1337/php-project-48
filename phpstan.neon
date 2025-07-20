@@ -4,6 +4,3 @@ parameters:
         - bin
         - src
         - tests
-
-    ignoreErrors:
-        - identifier: missingType.iterableValue
