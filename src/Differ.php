@@ -21,6 +21,11 @@ function genDiff(string $filePath1, string $filePath2, string $format = 'stylish
     return render($diff, $format);
 }
 
+/**
+ * @param array<string, mixed> $data1
+ * @param array<string, mixed> $data2
+ * @return array<int, array<string, mixed>>
+ */
 function createDiffTree(array $data1, array $data2): array
 {
     $allKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));

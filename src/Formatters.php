@@ -6,6 +6,11 @@ use function Differ\Formatters\Stylish\displayStylish;
 use function Differ\Formatters\Plain\displayPlain;
 use function Differ\Formatters\Json\displayJson;
 
+/**
+ * @param array<int, array<string, mixed>> $tree
+ * @param string $format
+ * @return string
+ */
 function render(array $tree, string $format): string
 {
     return match ($format) {

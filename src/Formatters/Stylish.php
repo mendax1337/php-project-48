@@ -20,6 +20,11 @@ const SIGN_MAP = [
     NESTED => ' ',
 ];
 
+/**
+ * @param array<int, array<string, mixed>> $nodes
+ * @param int $depth
+ * @return string
+ */
 function displayStylish(array $nodes, int $depth = 1): string
 {
     $indent = str_repeat(INDENT, $depth * BASE_INDENT - SIGN_LENGTH);
@@ -27,64 +32,75 @@ function displayStylish(array $nodes, int $depth = 1): string
     $lines = [];
 
     foreach ($nodes as $node) {
-        $key = $node['key'];
-        $type = $node['compare'];
+        $key = isset($node['key']) ? (is_scalar($node['key']) ? (string)$node['key'] : '') : '';
+        $type = $node['compare'] ?? '';
         switch ($type) {
             case CHANGED:
                 $lines[] = sprintf(
                     "%s- %s: %s",
                     $indent,
                     $key,
-                    formatValue($node['value1'], $depth + 1)
+                    formatValue($node['value1'] ?? null, $depth + 1)
                 );
                 $lines[] = sprintf(
                     "%s+ %s: %s",
                     $indent,
                     $key,
-                    formatValue($node['value2'], $depth + 1)
+                    formatValue($node['value2'] ?? null, $depth + 1)
                 );
                 break;
             case ADDED:
             case REMOVED:
             case UNCHANGED:
-                $sign = SIGN_MAP[$type];
+                $sign = SIGN_MAP[$type] ?? ' ';
                 $lines[] = sprintf(
                     "%s%s %s: %s",
                     $indent,
                     $sign,
                     $key,
-                    formatValue($node['value'], $depth + 1)
+                    formatValue($node['value'] ?? null, $depth + 1)
                 );
                 break;
             case NESTED:
-                $lines[] = sprintf(
-                    "%s  %s: %s",
-                    $indent,
-                    $key,
-                    displayStylish($node['value'], $depth + 1)
-                );
+                if (isset($node['value']) && is_array($node['value'])) {
+                    $lines[] = sprintf(
+                        "%s  %s: %s",
+                        $indent,
+                        $key,
+                        displayStylish($node['value'], $depth + 1)
+                    );
+                }
                 break;
         }
     }
     return "{\n" . implode("\n", $lines) . "\n{$closeIndent}}";
 }
 
-function formatValue($val, int $depth): string
+/**
+ * @param mixed $val
+ * @param int $depth
+ * @return string
+ */
+function formatValue(mixed $val, int $depth): string
 {
     if (is_bool($val)) {
         return $val ? 'true' : 'false';
     }
-    if (is_null($val)) {
+    if ($val === null) {
         return 'null';
     }
     if (!is_array($val)) {
-        return (string)$val;
+        if (is_scalar($val)) {
+            return (string)$val;
+        }
+        return '';
     }
     $indent = str_repeat(INDENT, $depth * BASE_INDENT);
     $closeIndent = str_repeat(INDENT, ($depth - 1) * BASE_INDENT);
     $result = [];
     foreach ($val as $k => $v) {
-        $result[] = "{$indent}{$k}: " . formatValue($v, $depth + 1);
+        $key = (string)$k;
+        $result[] = "{$indent}{$key}: " . formatValue($v, $depth + 1);
     }
     return "{\n" . implode("\n", $result) . "\n{$closeIndent}}";
 }
