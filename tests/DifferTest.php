@@ -80,4 +80,20 @@ class DifferTest extends TestCase
         $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
         $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
     }
+
+    public function testJsonFormatJson(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.json";
+        $file2 = "{$this->fixturesDir}/file2.json";
+        $expected = file_get_contents("{$this->fixturesDir}/json-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'json'));
+    }
+
+    public function testJsonFormatYamlAndJson(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.yml";
+        $file2 = "{$this->fixturesDir}/file2.json";
+        $expected = file_get_contents("{$this->fixturesDir}/json-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'json'));
+    }
 }

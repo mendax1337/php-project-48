@@ -4,7 +4,7 @@
     "description": "gendiff package",
     "type": "project",
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "docopt/docopt": "^1.0",
         "lstrojny/functional-php": "^1.17",
         "symfony/yaml": "*"
@@ -18,6 +18,7 @@
             "src/Parser.php",
             "src/Formatters/Stylish.php",
             "src/Formatters/Plain.php",
+            "src/Formatters/Json.php",
             "src/Formatters.php"
         ]
     },

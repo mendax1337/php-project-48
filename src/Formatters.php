@@ -4,15 +4,14 @@ namespace Differ\Formatters;
 
 use function Differ\Formatters\Stylish\formatStylish;
 use function Differ\Formatters\Plain\formatPlain;
+use function Differ\Formatters\Json\formatJson;
 
-function format(array $tree, string $formatName): string
+function format(array $diffTree, string $format): string
 {
-    switch ($formatName) {
-        case 'stylish':
-            return formatStylish($tree);
-        case 'plain':
-            return formatPlain($tree);
-        default:
-            throw new \Exception("Unknown format: {$formatName}");
-    }
+    return match ($format) {
+        'stylish' => formatStylish($diffTree),
+        'plain' => formatPlain($diffTree),
+        'json' => formatJson($diffTree),
+        default => throw new \Exception("Unknown format: {$format}")
+    };
 }
