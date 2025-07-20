@@ -2,78 +2,89 @@
 
 namespace Differ\Formatters\Stylish;
 
-const INDENT_STEP = 4;
+use const Differ\Differ\ADDED;
+use const Differ\Differ\REMOVED;
+use const Differ\Differ\UNCHANGED;
+use const Differ\Differ\CHANGED;
+use const Differ\Differ\NESTED;
 
-function formatStylish(array $tree, int $depth = 1): string
+const INDENT = ' ';
+const BASE_INDENT = 4;
+const SIGN_LENGTH = 2;
+
+const SIGN_MAP = [
+    ADDED => '+',
+    REMOVED => '-',
+    UNCHANGED => ' ',
+    CHANGED => ' ',
+    NESTED => ' ',
+];
+
+function displayStylish(array $nodes, int $depth = 1): string
 {
+    $indent = str_repeat(INDENT, $depth * BASE_INDENT - SIGN_LENGTH);
+    $closeIndent = str_repeat(INDENT, ($depth - 1) * BASE_INDENT);
     $lines = [];
 
-    foreach ($tree as $node) {
-        $indent = str_repeat(' ', $depth * INDENT_STEP - 2);
-
-        switch ($node['type']) {
-            case 'added':
-                $valStr = toString($node['value'], $depth + 1);
-                $lines[] = renderLine($indent, '+', $node['key'], $valStr);
+    foreach ($nodes as $node) {
+        $key = $node['key'];
+        $type = $node['compare'];
+        switch ($type) {
+            case CHANGED:
+                $lines[] = sprintf(
+                    "%s- %s: %s",
+                    $indent,
+                    $key,
+                    formatValue($node['value1'], $depth + 1)
+                );
+                $lines[] = sprintf(
+                    "%s+ %s: %s",
+                    $indent,
+                    $key,
+                    formatValue($node['value2'], $depth + 1)
+                );
                 break;
-
-            case 'removed':
-                $valStr = toString($node['value'], $depth + 1);
-                $lines[] = renderLine($indent, '-', $node['key'], $valStr);
+            case ADDED:
+            case REMOVED:
+            case UNCHANGED:
+                $sign = SIGN_MAP[$type];
+                $lines[] = sprintf(
+                    "%s%s %s: %s",
+                    $indent,
+                    $sign,
+                    $key,
+                    formatValue($node['value'], $depth + 1)
+                );
                 break;
-
-            case 'unchanged':
-                $valStr = toString($node['value'], $depth + 1);
-                $lines[] = renderLine($indent, ' ', $node['key'], $valStr);
+            case NESTED:
+                $lines[] = sprintf(
+                    "%s  %s: %s",
+                    $indent,
+                    $key,
+                    displayStylish($node['value'], $depth + 1)
+                );
                 break;
-
-            case 'changed':
-                $oldValStr = toString($node['oldValue'], $depth + 1);
-                $newValStr = toString($node['newValue'], $depth + 1);
-                $lines[] = renderLine($indent, '-', $node['key'], $oldValStr);
-                $lines[] = renderLine($indent, '+', $node['key'], $newValStr);
-                break;
-
-            case 'nested':
-                $childLines = formatStylish($node['children'], $depth + 1);
-                $lines[] = renderLine($indent, ' ', $node['key'], $childLines);
-                break;
-
-            default:
-                throw new \Exception("Unknown node type: {$node['type']}");
         }
     }
-
-    $bracketIndent = str_repeat(' ', ($depth - 1) * INDENT_STEP);
-    return "{\n" . implode("\n", $lines) . "\n{$bracketIndent}}";
+    return "{\n" . implode("\n", $lines) . "\n{$closeIndent}}";
 }
 
-function renderLine(string $indent, string $symbol, string $key, string $value): string
+function formatValue($val, int $depth): string
 {
-    if (str_starts_with($value, "{\n")) {
-        return "{$indent}{$symbol} {$key}: {$value}";
+    if (is_bool($val)) {
+        return $val ? 'true' : 'false';
     }
-    return $value === ''
-        ? "{$indent}{$symbol} {$key}:"
-        : "{$indent}{$symbol} {$key}: {$value}";
-}
-
-function toString($value, int $depth): string
-{
-    if (is_bool($value)) {
-        return $value ? 'true' : 'false';
-    }
-    if ($value === null) {
+    if (is_null($val)) {
         return 'null';
     }
-    if (!is_array($value)) {
-        return (string)$value;
+    if (!is_array($val)) {
+        return (string)$val;
     }
-    $indent = str_repeat(' ', $depth * INDENT_STEP);
-    $closingIndent = str_repeat(' ', ($depth - 1) * INDENT_STEP);
-    $lines = [];
-    foreach ($value as $key => $val) {
-        $lines[] = "{$indent}{$key}: " . toString($val, $depth + 1);
+    $indent = str_repeat(INDENT, $depth * BASE_INDENT);
+    $closeIndent = str_repeat(INDENT, ($depth - 1) * BASE_INDENT);
+    $result = [];
+    foreach ($val as $k => $v) {
+        $result[] = "{$indent}{$k}: " . formatValue($v, $depth + 1);
     }
-    return "{\n" . implode("\n", $lines) . "\n{$closingIndent}}";
+    return "{\n" . implode("\n", $result) . "\n{$closeIndent}}";
 }

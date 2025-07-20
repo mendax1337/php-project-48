@@ -2,9 +2,7 @@
 
 namespace Differ\Formatters\Json;
 
-use JsonException;
-
-function formatJson(array $data): string
+function displayJson(array $tree): string
 {
-    return json_encode($data, JSON_THROW_ON_ERROR) . PHP_EOL;
+    return json_encode($tree, JSON_THROW_ON_ERROR) . PHP_EOL;
 }
