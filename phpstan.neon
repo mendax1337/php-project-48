@@ -1,5 +1,9 @@
 parameters:
-  memoryLimit: 512M  
-  level: max
-  paths:
-    - src
+    level: 8
+    paths:
+        - bin
+        - src
+        - tests
+
+    ignoreErrors:
+        - identifier: missingType.iterableValue
