@@ -3,13 +3,15 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/mendax1337/php-project-48/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/mendax1337/php-project-48/actions)
 
-## Asciinema:
+## Asciinemas:
 ### Gendiff json's:
 [![asciicast](https://asciinema.org/a/728543.svg)](https://asciinema.org/a/728543)
 ### Gendiff yml's:
 [![asciicast](https://asciinema.org/a/728722.svg)](https://asciinema.org/a/728722)
 ### Gendiff nested:
 [![asciicast](https://asciinema.org/a/728730.svg)](https://asciinema.org/a/728730)
+### Gendiff plain:
+[![asciicast](https://asciinema.org/a/728800.svg)](https://asciinema.org/a/728800)
 
 ## SonarQube badges:
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mdx_php-project-48&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mdx_php-project-48)

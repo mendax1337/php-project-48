@@ -3,7 +3,7 @@
 namespace Differ\Differ;
 
 use function Differ\Parser\parseFile;
-use function Differ\Formatters\Stylish\formatStylish;
+use function Differ\Formatters\format;
 
 const ADDED = 'added';
 const REMOVED = 'removed';
@@ -18,12 +18,7 @@ function genDiff(string $filePath1, string $filePath2, string $format = 'stylish
 
     $diffTree = buildDiffTree($data1, $data2);
 
-    switch ($format) {
-        case 'stylish':
-            return formatStylish($diffTree);
-        default:
-            throw new \Exception("Unknown format: {$format}");
-    }
+    return format($diffTree, $format);
 }
 
 function buildDiffTree(array $data1, array $data2): array

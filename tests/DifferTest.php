@@ -32,4 +32,52 @@ class DifferTest extends TestCase
         $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
         $this->assertSame($expected, genDiff($file1, $file2));
     }
+
+    public function testStylishJsonAndYaml(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.json";
+        $file2 = "{$this->fixturesDir}/file2.yml";
+        $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'stylish'));
+    }
+
+    public function testStylishYamlAndJson(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.yml";
+        $file2 = "{$this->fixturesDir}/file2.json";
+        $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'stylish'));
+    }
+
+    public function testPlainJson(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.json";
+        $file2 = "{$this->fixturesDir}/file2.json";
+        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
+    }
+
+    public function testPlainYaml(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.yml";
+        $file2 = "{$this->fixturesDir}/file2.yml";
+        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
+    }
+
+    public function testPlainFormatJsonAndYaml(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.json";
+        $file2 = "{$this->fixturesDir}/file2.yml";
+        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
+    }
+
+    public function testPlainFormatYamlAndJson(): void
+    {
+        $file1 = "{$this->fixturesDir}/file1.yml";
+        $file2 = "{$this->fixturesDir}/file2.json";
+        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
+        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
+    }
 }
