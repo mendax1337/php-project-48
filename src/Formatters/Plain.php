@@ -23,7 +23,10 @@ function formatPlain(array $tree, string $ancestry = ''): string
                 break;
 
             case 'changed':
-                $lines[] = "Property '{$property}' was updated. From " . toPlainValue($node['oldValue']) . " to " . toPlainValue($node['newValue']);
+                $lines[] = "Property '{$property}' was updated. From "
+                    . toPlainValue($node['oldValue'])
+                    . " to "
+                    . toPlainValue($node['newValue']);
                 break;
         }
     }
