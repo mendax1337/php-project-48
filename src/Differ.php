@@ -30,15 +30,16 @@ function genDiff(string $filePath1, string $filePath2, string $format = 'stylish
 /**
  * @param array<string, mixed> $data1
  * @param array<string, mixed> $data2
- * @return array<int, array<string, mixed>>
+ * @return list<array<string, mixed>>
  */
 function createDiffTree(array $data1, array $data2): array
 {
     $allKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));
     $allKeysSorted = $allKeys;
-    sort($allKeysSorted);
+    $allKeysSorted = array_values($allKeysSorted);
+    usort($allKeysSorted, fn($a, $b) => $a <=> $b);
 
-    return array_values(array_map(
+    return array_map(
         static function ($key) use ($data1, $data2) {
             $has1 = array_key_exists($key, $data1);
             $has2 = array_key_exists($key, $data2);
@@ -47,7 +48,7 @@ function createDiffTree(array $data1, array $data2): array
 
             if ($has1 && !$has2) {
                 return [
-                    'compare' => REMOVED, // <= сначала compare!
+                    'compare' => REMOVED,
                     'key' => $key,
                     'value' => $val1,
                 ];
@@ -81,5 +82,5 @@ function createDiffTree(array $data1, array $data2): array
             ];
         },
         $allKeysSorted
-    ));
+    );
 }
