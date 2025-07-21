@@ -35,23 +35,22 @@ function genDiff(string $filePath1, string $filePath2, string $format = 'stylish
 function createDiffTree(array $data1, array $data2): array
 {
     /** @var list<string> $allKeys */
-    $allKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));
-    $insertSorted = function (array $keys): array {
-        return array_reduce(
-            $keys,
-            function ($sorted, $key) {
-                $pos = 0;
-                while ($pos < count($sorted) && $sorted[$pos] < $key) {
-                    $pos++;
+    $allKeys = array_values(array_unique(array_merge(array_keys($data1), array_keys($data2))));
+    $sortedKeys = array_map(
+        static fn ($pair) => $pair[1],
+        iterator_to_array(
+            (function () use ($allKeys) {
+                $result = [];
+                foreach ($allKeys as $key) {
+                    $result[] = $key;
                 }
-                array_splice($sorted, $pos, 0, [$key]);
-                return $sorted;
-            },
-            []
-        );
-    };
-
-    $sortedKeys = $insertSorted($allKeys);
+                asort($result);
+                foreach ($result as $key) {
+                    yield [null, $key];
+                }
+            })()
+        )
+    );
 
     return array_map(
         static function ($key) use ($data1, $data2) {
