@@ -1,4 +1,4 @@
-![CI](https://github.com/mendax1337/php-project-48/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/mendax1337/php-project-48/actions/workflows/ci.yml/badge.svg)](https://github.com/mendax1337/php-project-48/actions)
 
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/mendax1337/php-project-48/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/mendax1337/php-project-48/actions)
