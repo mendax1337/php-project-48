@@ -4,6 +4,7 @@ namespace Differ\Differ;
 
 use function Differ\Parser\parseFile;
 use function Differ\Formatters\render;
+use function Functional\sort;
 
 const ADDED = 'added';
 const REMOVED = 'deleted';
@@ -35,22 +36,10 @@ function genDiff(string $filePath1, string $filePath2, string $format = 'stylish
 function createDiffTree(array $data1, array $data2): array
 {
     /** @var list<string> $allKeys */
-    $allKeys = array_values(array_unique(array_merge(array_keys($data1), array_keys($data2))));
-    $sortedKeys = array_map(
-        static fn ($pair) => $pair[1],
-        iterator_to_array(
-            (function () use ($allKeys) {
-                $result = [];
-                foreach ($allKeys as $key) {
-                    $result[] = $key;
-                }
-                asort($result);
-                foreach ($result as $key) {
-                    yield [null, $key];
-                }
-            })()
-        )
-    );
+    $allKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));
+
+    /** @var list<string> $sortedKeys */
+    $sortedKeys = sort($allKeys, fn($a, $b) => $a <=> $b);
 
     return array_map(
         static function ($key) use ($data1, $data2) {
