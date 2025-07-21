@@ -35,9 +35,12 @@ function genDiff(string $filePath1, string $filePath2, string $format = 'stylish
 function createDiffTree(array $data1, array $data2): array
 {
     $allKeys = array_unique(array_merge(array_keys($data1), array_keys($data2)));
-    $allKeysSorted = $allKeys;
+    $allKeysSorted = array_map(
+        fn($el) => $el,
+        $allKeys
+    );
     $allKeysSorted = array_values($allKeysSorted);
-    usort($allKeysSorted, fn($a, $b) => $a <=> $b);
+    $allKeysSorted = collect($allKeysSorted)->sort()->values()->all();
 
     return array_map(
         static function ($key) use ($data1, $data2) {
