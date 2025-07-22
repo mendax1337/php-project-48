@@ -17,83 +17,39 @@ class DifferTest extends TestCase
         $this->fixturesDir = __DIR__ . '/fixtures';
     }
 
-    public function testStylishJson(): void
+    /** @dataProvider diffProvider */
+    public function testGenDiff(string $file1, string $file2, string $format, string $expectedFile): void
     {
-        $file1 = "{$this->fixturesDir}/file1.json";
-        $file2 = "{$this->fixturesDir}/file2.json";
-        $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2));
+        $expected = file_get_contents("{$this->fixturesDir}/{$expectedFile}");
+        $this->assertSame(
+            $expected,
+            genDiff("{$this->fixturesDir}/{$file1}", "{$this->fixturesDir}/{$file2}", $format)
+        );
     }
 
-    public function testStylishYaml(): void
+    /**
+     * @return array<int, array{string, string, string, string}>
+     */
+    public static function diffProvider(): array
     {
-        $file1 = "{$this->fixturesDir}/file1.yml";
-        $file2 = "{$this->fixturesDir}/file2.yml";
-        $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2));
-    }
+        return [
+            // stylish
+            ['file1.json', 'file2.json', 'stylish', 'stylish-expected.txt'],
+            ['file1.yml', 'file2.yml', 'stylish', 'stylish-expected.txt'],
+            ['file1.json', 'file2.yml', 'stylish', 'stylish-expected.txt'],
+            ['file1.yml', 'file2.json', 'stylish', 'stylish-expected.txt'],
 
-    public function testStylishJsonAndYaml(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.json";
-        $file2 = "{$this->fixturesDir}/file2.yml";
-        $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'stylish'));
-    }
+            // plain
+            ['file1.json', 'file2.json', 'plain', 'plain-expected.txt'],
+            ['file1.yml', 'file2.yml', 'plain', 'plain-expected.txt'],
+            ['file1.json', 'file2.yml', 'plain', 'plain-expected.txt'],
+            ['file1.yml', 'file2.json', 'plain', 'plain-expected.txt'],
 
-    public function testStylishYamlAndJson(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.yml";
-        $file2 = "{$this->fixturesDir}/file2.json";
-        $expected = file_get_contents("{$this->fixturesDir}/stylish-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'stylish'));
-    }
-
-    public function testPlainJson(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.json";
-        $file2 = "{$this->fixturesDir}/file2.json";
-        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
-    }
-
-    public function testPlainYaml(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.yml";
-        $file2 = "{$this->fixturesDir}/file2.yml";
-        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
-    }
-
-    public function testPlainFormatJsonAndYaml(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.json";
-        $file2 = "{$this->fixturesDir}/file2.yml";
-        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
-    }
-
-    public function testPlainFormatYamlAndJson(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.yml";
-        $file2 = "{$this->fixturesDir}/file2.json";
-        $expected = file_get_contents("{$this->fixturesDir}/plain-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'plain'));
-    }
-
-    public function testJsonFormatJson(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.json";
-        $file2 = "{$this->fixturesDir}/file2.json";
-        $expected = file_get_contents("{$this->fixturesDir}/json-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'json'));
-    }
-
-    public function testJsonFormatYamlAndJson(): void
-    {
-        $file1 = "{$this->fixturesDir}/file1.yml";
-        $file2 = "{$this->fixturesDir}/file2.json";
-        $expected = file_get_contents("{$this->fixturesDir}/json-expected.txt");
-        $this->assertSame($expected, genDiff($file1, $file2, 'json'));
+            // json
+            ['file1.json', 'file2.json', 'json', 'json-expected.txt'],
+            ['file1.yml', 'file2.json', 'json', 'json-expected.txt'],
+            ['file1.yml', 'file2.yml', 'json', 'json-expected.txt'],
+            ['file1.json', 'file2.yml', 'json', 'json-expected.txt'],
+        ];
     }
 }
